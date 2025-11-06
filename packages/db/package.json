@@ -17,6 +17,7 @@
   "type": "commonjs",
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
     "prisma": "6.8.2"
   },
   "dependencies": {
