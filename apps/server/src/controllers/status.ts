@@ -12,7 +12,7 @@ export const getStatus = async (req: Request, res: Response) => {
             include: {
                 ticks: {
                     orderBy: [{
-                        createdAt: 'decs'
+                        createdAt: 'desc',
                     }],
                     take: 1
                 }

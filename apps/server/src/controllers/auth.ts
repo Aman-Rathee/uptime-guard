@@ -33,14 +33,7 @@ export const signup = async (req: Request, res: Response) => {
 
         const token = jwt.sign({ userid: user.id }, jwt_secret, { expiresIn: "7d" })
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'prod',
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-        })
-
-        res.status(200).json({ msg: "User created successfully", userId: user.id })
+        res.status(200).json({ token })
     } catch (err) {
         res.status(500).json({ msg: "Internal server error" })
     }
@@ -72,14 +65,7 @@ export const signin = async (req: Request, res: Response) => {
 
         const token = jwt.sign({ userid: user.id }, jwt_secret, { expiresIn: "7d" })
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'prod',
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-        })
-
-        res.status(200).json({ msg: "Logged in successfully" })
+        res.status(200).json({ token })
 
     } catch (err) {
         res.status(500).json({ msg: "Internal server error" })

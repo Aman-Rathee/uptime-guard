@@ -4,15 +4,17 @@ import { jwt_secret } from "../../config.js";
 
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.token;
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
         res.status(401).json({ msg: "Unauthorized user" })
         return
     }
 
+    const token = authHeader.split(" ")[1];
+
     try {
-        const decoded = jwt.verify(token, jwt_secret) as JwtPayload
+        const decoded = jwt.verify(token!, jwt_secret) as JwtPayload
         req.userId = decoded.userId
         next()
 
