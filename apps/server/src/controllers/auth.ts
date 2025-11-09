@@ -31,14 +31,12 @@ export const signup = async (req: Request, res: Response) => {
             }
         })
 
-        const token = jwt.sign({ userid: user.id }, jwt_secret, { expiresIn: "7d" })
+        const token = jwt.sign({ userId: user.id }, jwt_secret, { expiresIn: "7d" })
 
         res.status(200).json({ token })
     } catch (err) {
         res.status(500).json({ msg: "Internal server error" })
     }
-
-    res.send("signup")
 }
 
 export const signin = async (req: Request, res: Response) => {
@@ -58,12 +56,12 @@ export const signin = async (req: Request, res: Response) => {
             return
         }
 
-        const isMatch = bcrypt.compare(password, user.password)
+        const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
             res.status(400).json({ msg: "Invalid credential" })
         }
 
-        const token = jwt.sign({ userid: user.id }, jwt_secret, { expiresIn: "7d" })
+        const token = jwt.sign({ userId: user.id }, jwt_secret, { expiresIn: "7d" })
 
         res.status(200).json({ token })
 
