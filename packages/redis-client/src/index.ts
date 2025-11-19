@@ -1,32 +1,43 @@
-import { createClient } from "redis";
+import { createClient, RedisClientType } from "redis";
 
 interface WebsiteDataType {
-    id: string,
-    url: string
+    id: string;
+    url: string;
 }
 
 interface MessageType {
     id: string;
     message: {
-        id: string,
-        url: string
+        id: string;
+        url: string;
     }
 }
 
 const streamKey = "uptime-guard:website"
 
-const client = await createClient()
-    .on("error", (err) => console.log("Redis client error", err))
-    .connect();
+let client: RedisClientType | null = null;
+
+async function getClient() {
+    if (client && client.isOpen) return client;
+
+    client = createClient({
+        url: process.env.REDIS_URL || "redis://localhost:6379"
+    });
+
+    client.on("error", (err) => console.error("Redis Client Error", err));
+
+    await client.connect();
+    return client;
+}
 
 
 export const xAddBulk = async (websites: WebsiteDataType[]) => {
     if (!websites.length) return;
-
-    const multi = client.multi();
+    const redis = await getClient();
+    const multi = redis.multi();
 
     for (const w of websites) {
-        await multi.xAdd(
+        multi.xAdd(
             streamKey, "*", {
             id: w.id.toString(),
             url: w.url,
@@ -37,8 +48,9 @@ export const xAddBulk = async (websites: WebsiteDataType[]) => {
 
 
 export async function xReadGroup(workerGroup: string, workerId: string) {
+    const redis = await getClient();
 
-    const res = await client.xReadGroup(
+    const res = await redis.xReadGroup(
         workerGroup, workerId, {
         key: streamKey,
         id: '>'
@@ -46,8 +58,7 @@ export async function xReadGroup(workerGroup: string, workerId: string) {
         COUNT: 10
     });
 
-    if (!res) return [];
-    if (!Array.isArray(res)) return [];
+    if (!res || res.length === 0) return [];
     if (!res[0] || typeof res[0] !== 'object' || !('messages' in res[0])) {
         return [];
     }
@@ -58,7 +69,9 @@ export async function xReadGroup(workerGroup: string, workerId: string) {
 
 
 export async function xAckBulk(consumerGroup: string, eventIds: string[]) {
-    const multi = client.multi();
+    if (eventIds.length === 0) return;
+    const redis = await getClient();
+    const multi = redis.multi();
     eventIds.forEach(id => {
         multi.xAck(streamKey, consumerGroup, id);
     });
