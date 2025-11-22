@@ -20,8 +20,44 @@ export const createWebsite = async (req: Request, res: Response) => {
 
         res.json({ id: website.id })
 
-
     } catch (err) {
         res.status(500).json({ msg: "Internal server error" })
     }
 }
+
+
+export const getDashboard = async (req: Request, res: Response) => {
+    try {
+        const websites = await prisma.website.findMany({
+            where: { user_id: req.userId },
+            include: {
+                ticks: {
+                    orderBy: { createdAt: "desc" },
+                    take: 20,
+                    include: {
+                        region: true,
+                    },
+                },
+            },
+        });
+
+        const dashboard = websites.map((w) => ({
+            id: w.id,
+            url: w.url,
+            timeAdded: w.timeAdded,
+            ticks: w.ticks,
+            latestStatus: w.ticks[0]
+                ? {
+                    status: w.ticks[0].status,
+                    responseTimeMs: w.ticks[0].response_time_ms,
+                    region: w.ticks[0].region.name,
+                    checkedAt: w.ticks[0].createdAt,
+                }
+                : null,
+        }));
+
+        res.json({ websites: dashboard });
+    } catch (error) {
+        res.status(500).json({ error: "Server error" });
+    }
+};

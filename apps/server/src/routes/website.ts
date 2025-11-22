@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { createWebsite } from "../controllers/website.js";
-import { authMiddleware } from "../middlewares/auth.js";
+import { createWebsite, getDashboard } from "../controllers/website.js";
 
 export const websiteRouter: Router = Router()
 
-websiteRouter.post("/", authMiddleware, createWebsite)
+websiteRouter.post("/", createWebsite)
+websiteRouter.get("/dashboard", getDashboard)
