@@ -12,8 +12,10 @@ import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { Website, WebsiteStatus } from "@/lib/types";
 import { BACKEND_URL } from "@/lib/config";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [websites, setWebsites] = useState<Website[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +60,12 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    fetchWebsites();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/signup");
+    } else {
+      fetchWebsites();
+    }
   }, []);
 
   const stats = useMemo(() => {
