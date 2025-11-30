@@ -228,7 +228,9 @@ function MonitorRow({ site }: { site: Website }) {
   const lastTick = site.ticks[site.ticks.length - 1];
   const isUp = lastTick?.status === WebsiteStatus.Up;
   const isUnknown = lastTick?.status === WebsiteStatus.Unknown || !lastTick;
-  const chartData = site.ticks.map((t) => ({ value: t.response_time_ms }));
+  const chartData = site.ticks.map((t) => ({ value: t.response_time_ms, status: t.status }));
+  const gradientIdStroke = `strokeGradient-${site.id}`;
+  const gradientIdFill = `fillGradient-${site.id}`;
 
   return (
     <div className="group relative flex items-center bg-slate-900 hover:bg-slate-700/50 border border-slate-800 rounded-lg p-4 transition-all hover:border-slate-700">
@@ -256,19 +258,29 @@ function MonitorRow({ site }: { site: Website }) {
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
               <defs>
-                <linearGradient id={`colorGradient-${site.id}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={isUp ? "#10b981" : "#f43f5e"} stopOpacity={0.3} />
-                  <stop offset="95%" stopColor={isUp ? "#10b981" : "#f43f5e"} stopOpacity={0} />
+                <linearGradient id={gradientIdStroke} x1="0" y1="0" x2="1" y2="0">
+                  {chartData.map((entry, index) => {
+                    const offset = (index / (chartData.length - 1 || 1)) * 100;
+                    const color = entry.status === WebsiteStatus.Up ? "#10b981" : "#f43f5e";
+                    return <stop key={index} offset={`${offset}%`} stopColor={color} />;
+                  })}
+                </linearGradient>
+                <linearGradient id={gradientIdFill} x1="0" y1="0" x2="1" y2="0">
+                  {chartData.map((entry, index) => {
+                    const offset = (index / (chartData.length - 1 || 1)) * 100;
+                    const color = entry.status === WebsiteStatus.Up ? "#10b981" : "#f43f5e";
+                    return <stop key={index} offset={`${offset}%`} stopColor={color} stopOpacity={0.25} />;
+                  })}
                 </linearGradient>
               </defs>
               <RechartsTooltip cursor={false} content={<CustomTooltip />} />
               <Area
                 type="monotone"
                 dataKey="value"
-                stroke={isUp ? "#10b981" : "#f43f5e"}
+                stroke={`url(#${gradientIdStroke})`}
                 strokeWidth={2}
                 fillOpacity={1}
-                fill={`url(#colorGradient-${site.id})`}
+                fill={`url(#${gradientIdFill})`}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -293,11 +305,18 @@ function MonitorRow({ site }: { site: Website }) {
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    const statusColor = data.status === WebsiteStatus.Up ? "text-emerald-400" : data.status === WebsiteStatus.Down ? "text-rose-400" : "text-amber-400";
 
     return (
       <div className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200">
-        <p className="text-xs text-slate-400">Response Time</p>
-        <p className="text-sm font-semibold text-slate-200">{payload[0].value}ms</p>
+        <div className="flex items-baseline justify-between gap-4">
+          <div>
+            <p className="text-xs text-slate-400">Response Time</p>
+            <p className="text-sm font-semibold text-slate-200">{data.value ?? (payload[0].value ?? "-")}ms</p>
+          </div>
+          <div className={`text-xs font-medium ${statusColor}`}>{data.status}</div>
+        </div>
       </div>
     );
   }
