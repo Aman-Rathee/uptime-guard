@@ -1,0 +1,27 @@
+{
+  "name": "@repo/clickhouse-client",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "dev": "tsup --watch --onSuccess \"node dist/index.js\"",
+    "init:schema": "node dist/schema.js"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@clickhouse/client": "^1.14.0",
+    "@repo/typescript-config": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  }
+}

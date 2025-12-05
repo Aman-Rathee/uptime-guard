@@ -13,6 +13,7 @@ import axios from "axios";
 import { Website, WebsiteStatus } from "@/lib/types";
 import { BACKEND_URL } from "@/lib/config";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -131,7 +132,7 @@ export default function DashboardPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
             <Input
               placeholder="Search monitors..."
-              className="pl-10 bg-slate-900 border-slate-800 focus-visible:ring-emerald-500"
+              className="pl-10 bg-slate-900 border-slate-800 focus-visible:ring-indigo-500"
             />
           </div>
 
@@ -142,7 +143,7 @@ export default function DashboardPage() {
 
             <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-emerald-500 hover:bg-emerald-600 text-white font-medium">
+                <Button className="bg-indigo-500 hover:bg-indigo-600 text-white font-medium">
                   <Plus className="mr-2 h-4 w-4" /> Add New Monitor
                 </Button>
               </DialogTrigger>
@@ -163,7 +164,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={handleAddWebsite} className="bg-emerald-500 hover:bg-emerald-600">
+                  <Button onClick={handleAddWebsite} className="bg-indigo-500 text-slate-50 hover:bg-indigo-600">
                     Start Monitoring
                   </Button>
                 </DialogFooter>
@@ -238,7 +239,7 @@ function MonitorRow({ site }: { site: Website }) {
       <div className="grid grid-cols-12 w-full items-center gap-4">
         <div className="col-span-4 md:col-span-3 flex items-center gap-3 overflow-hidden">
           <div className={`relative shrink-0 flex items-center justify-center w-8 h-8 rounded-full 
-            ${isUnknown ? 'bg-amber-500/10' : isUp ? 'bg-emerald-500/10' : 'bg-rose-500/10'}`}>
+            ${isUnknown ? 'bg-amber-500/15' : isUp ? 'bg-emerald-500/15' : 'bg-rose-500/15'}`}>
 
             {isUnknown ? (
               <AlertCircle className="w-4 h-4 text-amber-500" />
@@ -249,7 +250,7 @@ function MonitorRow({ site }: { site: Website }) {
             )}
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="font-medium text-slate-200 truncate">{site.url.replace('https://', '')}</span>
+            <Link href={site.url} target="_blank" className="font-medium text-slate-200 truncate">{site.url.replace('https://', '')}</Link>
             <span className="text-xs text-slate-500 hidden sm:block">Checked 1m ago</span>
           </div>
         </div>
@@ -292,8 +293,8 @@ function MonitorRow({ site }: { site: Website }) {
 
         <div className="hidden md:flex col-span-2 justify-end pr-4">
           <Badge variant="outline" className={`
-              ${isUnknown ? 'border-amber-500/50 text-amber-500' :
-              isUp ? 'border-emerald-500/50 text-emerald-500' : 'border-rose-500/50 text-rose-500'}
+              ${isUnknown ? 'border-amber-500/50 text-amber-500 bg-amber-500/15' :
+              isUp ? 'border-emerald-500/50 text-emerald-500 bg-emerald-500/15' : 'border-rose-500/50 text-rose-500 bg-rose-500/15'}
            `}>
             {lastTick?.status || "UNKNOWN"}
           </Badge>
