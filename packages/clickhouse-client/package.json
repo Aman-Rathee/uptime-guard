@@ -9,7 +9,7 @@
     "init:schema": "node dist/schema.js"
   },
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./src/index.ts"
   },
   "keywords": [],
   "author": "",

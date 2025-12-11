@@ -1,1 +1,1 @@
-export const tableName = 'website_ticks'
+export const tableName = 'websiteTicks'

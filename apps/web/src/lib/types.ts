@@ -21,11 +21,8 @@ export interface Website {
     id: string;
     url: string;
     timeAdded: Date;
-    ticks: WebsiteTick[];
-    latestStatus: {
-        status: WebsiteStatus;
-        responseTimeMs: number;
-        region: string;
-        checkedAt: Date;
-    }
+    responseTimeMs: number;
+    status: WebsiteStatus;
+    region: string;
+    checkedAt: Date;
 }
