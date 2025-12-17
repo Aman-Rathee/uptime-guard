@@ -1,7 +1,7 @@
 import { prisma } from "@repo/db"
 import { websiteSchema } from "../types/website.js"
 import { Request, Response } from "express"
-import { getLatestStatus, WebsiteStatus } from "@repo/clickhouse-client"
+import { getLastStatus, getLatestStatuses, getWebsiteStats, WebsiteStatus } from "@repo/clickhouse-client"
 
 
 export const createWebsite = async (req: Request, res: Response) => {
@@ -22,10 +22,9 @@ export const createWebsite = async (req: Request, res: Response) => {
         res.json({ id: website.id })
 
     } catch (err) {
-        res.status(500).json({ msg: "Internal server error" })
+        res.status(500).json({ error: "Internal server error" })
     }
 }
-
 
 export const getDashboard = async (req: Request, res: Response) => {
     try {
@@ -34,7 +33,7 @@ export const getDashboard = async (req: Request, res: Response) => {
         });
         const websiteIds = websites.map(w => w.id)
 
-        const websitesStatuses = await getLatestStatus(websiteIds)
+        const websitesStatuses = await getLatestStatuses(websiteIds)
         const statusMap = new Map(
             websitesStatuses?.map(s => [s.websiteId, s])
         );
@@ -58,3 +57,40 @@ export const getDashboard = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Server error" });
     }
 };
+
+export const getWebsiteData = async (req: Request, res: Response) => {
+
+    try {
+        const website = await prisma.website.findUnique({ where: { id: req.params.id, user_id: req.userId } });
+
+        if (!website) {
+            res.status(404).json({ error: "Monitor not found" });
+            return
+        }
+
+        let stats = await getWebsiteStats(website.id)
+        let lastStatus = await getLastStatus(website.id)
+
+        let totalPoints;
+        let avgLatency24h;
+        let uptime24h;
+        if (stats) {
+            totalPoints = stats.length;
+            avgLatency24h = totalPoints > 0 ? stats.reduce((acc, curr) => acc + Number(curr.avg_latency), 0) / totalPoints : 0;
+            uptime24h = totalPoints > 0 ? (stats.reduce((acc, curr) => acc + Number(curr.uptime_rate), 0) / totalPoints) * 100 : 0;
+        }
+
+        res.json({
+            monitor: website,
+            stats: {
+                lastCheck: lastStatus,
+                uptime24h,
+                avgLatency24h,
+                history: stats
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: "Server error" });
+    }
+}

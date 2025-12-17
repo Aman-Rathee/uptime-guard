@@ -21,7 +21,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@repo/db": "workspace:*",
+    "@repo/clickhouse-client": "workspace:*",
     "@repo/redis-client": "workspace:*",
     "axios": "^1.13.2"
   }

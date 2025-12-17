@@ -1,6 +1,6 @@
 import { xAckBulk, xReadGroup } from "@repo/redis-client"
 import axios from "axios"
-import { prisma } from "@repo/db"
+import { insertWebsiteTick, WebsiteStatus } from "@repo/clickhouse-client"
 
 const REGION_ID = process.env.REGION_ID!;
 const WORKER_ID = process.env.WORKER_ID!;
@@ -20,9 +20,15 @@ async function main() {
 
         if (!response) continue;
 
-        let promises = response.map(({ message }) => fetchWebsite(message.id, message.url))
-        await Promise.all(promises);
-        console.log(promises.length);
+        let checks = await Promise.all(
+            response.map(({ message }) =>
+                fetchWebsite(message.id, message.url)
+            )
+        );
+
+        await insertWebsiteTick(checks);
+
+        console.log(checks.length);
 
         const messageIds = response.map(({ id }) => id);
         await xAckBulk(REGION_ID, messageIds);
@@ -35,25 +41,19 @@ async function fetchWebsite(websiteId: string, url: string) {
 
     try {
         await axios.get(url);
-        const endTime = Date.now() - startTime;
-        await prisma.websiteTick.create({
-            data: {
-                response_time_ms: endTime,
-                status: "Up",
-                region_id: REGION_ID,
-                website_id: websiteId
-            }
-        });
+        return {
+            responseTimeMs: Date.now() - startTime,
+            status: WebsiteStatus.Up,
+            regionId: REGION_ID,
+            websiteId
+        };
     } catch (err) {
-        const endTime = Date.now() - startTime;
-        await prisma.websiteTick.create({
-            data: {
-                response_time_ms: endTime,
-                status: "Down",
-                region_id: REGION_ID,
-                website_id: websiteId
-            }
-        });
+        return {
+            responseTimeMs: Date.now() - startTime,
+            status: WebsiteStatus.Down,
+            regionId: REGION_ID,
+            websiteId
+        };
     }
 }
 

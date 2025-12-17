@@ -15,7 +15,7 @@ export async function initSchema() {
         websiteId String
       )
       ENGINE = MergeTree()
-      ORDER BY id
+      ORDER BY (websiteId, createdAt)
     `,
   });
 

@@ -212,8 +212,8 @@ const WebsiteCard = ({ website }: { website: Website }) => {
   const getResponseTimeColor = (ms: number, status: WebsiteStatus) => {
     switch (status) {
       case WebsiteStatus.Up:
-        if (ms < 250) return 'text-emerald-500';
-        if (ms < 500) return 'text-amber-500';
+        if (ms < 1000) return 'text-emerald-500';
+        if (ms < 2000) return 'text-amber-500';
       case WebsiteStatus.Down:
         return 'text-rose-500';
       default:
@@ -237,54 +237,56 @@ const WebsiteCard = ({ website }: { website: Website }) => {
   };
 
   return (
-    <Card className="bg-slate-900">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            <Globe className="w-5 h-5 text-gray-300 shrink-0" />
-            <CardTitle className="text-lg truncate">
-              <Link href={website.url} target="_blank">{website.url.replace('https://', '')}</Link>
-            </CardTitle>
+    <Link href={`/website/${website.id}`} >
+      <Card className="bg-slate-900 hover:scale-105 transition-transform">
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <Globe className="w-5 h-5 text-gray-300 shrink-0" />
+              <CardTitle className="text-lg truncate">
+                <div>{website.url.replace('https://', '')}</div>
+              </CardTitle>
+            </div>
+            <Badge variant="outline" className={`${getStatusColor(website.status)}`}>
+              <span className="flex items-center gap-1">
+                {website.status}
+              </span>
+            </Badge>
           </div>
-          <Badge variant="outline" className={`${getStatusColor(website.status)}`}>
-            <span className="flex items-center gap-1">
-              {website.status}
-            </span>
-          </Badge>
-        </div>
-      </CardHeader>
+        </CardHeader>
 
-      <CardContent className="space-y-4">
-        <div className="flex justify-between gap-8">
-          <div className="flex items-center gap-2 text-sm">
-            <Clock className="w-4 h-4 text-gray-400" />
-            <div>
-              <p className="text-gray-400">Response Time</p>
-              <p className={`font-semibold ${getResponseTimeColor(website.responseTimeMs, website.status)}`}>
-                {website.responseTimeMs}ms
-              </p>
+        <CardContent className="space-y-4">
+          <div className="flex justify-between gap-8">
+            <div className="flex items-center gap-2 text-sm">
+              <Clock className="w-4 h-4 text-gray-400" />
+              <div>
+                <p className="text-gray-400">Response Time</p>
+                <p className={`font-semibold ${getResponseTimeColor(website.responseTimeMs, website.status)}`}>
+                  {website.responseTimeMs}ms
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <MapPin className="w-4 h-4 text-gray-400" />
+              <div>
+                <p className="text-gray-400">Region</p>
+                <p className="font-semibold text-gray-200">Us-East</p>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <MapPin className="w-4 h-4 text-gray-400" />
-            <div>
-              <p className="text-gray-400">Region</p>
-              <p className="font-semibold text-gray-200">Us-East</p>
+
+          <div className="pt-3 border-t space-y-1">
+            <div className="flex justify-between text-xs">
+              <span className="text-gray-400">Added</span>
+              <span className="text-gray-300">{formatDate(website.timeAdded)}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-gray-400">Last Checked</span>
+              <span className="text-gray-300">{formatDate(website.checkedAt)}</span>
             </div>
           </div>
-        </div>
-
-        <div className="pt-3 border-t space-y-1">
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-400">Added</span>
-            <span className="text-gray-300">{formatDate(website.timeAdded)}</span>
-          </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-400">Last Checked</span>
-            <span className="text-gray-300">{formatDate(website.checkedAt)}</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </Link>
   );
 };
