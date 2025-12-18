@@ -56,7 +56,7 @@ export default function SignupPage() {
                 router.push("/");
             }
         } catch (err: any) {
-            const msg = err.response?.data?.msg || "Invalid credentials. Please try again.";
+            const msg = err.response?.data?.error || "Invalid credentials. Please try again.";
             setError(msg);
         } finally {
             setIsLoading(false);

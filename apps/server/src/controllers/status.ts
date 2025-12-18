@@ -20,7 +20,7 @@ export const getStatus = async (req: Request, res: Response) => {
         })
 
         if (!website) {
-            res.status(409).json({ msg: "Website Not found" })
+            res.status(409).json({ error: "Website Not found" })
             return;
         }
 
@@ -31,6 +31,6 @@ export const getStatus = async (req: Request, res: Response) => {
         })
 
     } catch (err) {
-        res.status(500).json({ msg: "Internal server error" })
+        res.status(500).json({ error: "Internal server error" })
     }
 }

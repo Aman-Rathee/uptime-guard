@@ -7,7 +7,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        res.status(401).json({ msg: "Unauthorized user" })
+        res.status(401).json({ error: "Unauthorized user" })
         return
     }
 
@@ -19,7 +19,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         next()
 
     } catch (err) {
-        res.status(401).json({ msg: "Unauthorized: Invalid or expired token" })
+        res.status(401).json({ error: "Unauthorized: Invalid or expired token" })
     }
 
 }

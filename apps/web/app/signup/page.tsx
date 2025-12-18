@@ -63,7 +63,7 @@ export default function SignupPage() {
                 router.push("/");
             }
         } catch (err: any) {
-            const msg = err.response?.data?.msg || "Something went wrong. Please try again.";
+            const msg = err.response?.data?.error || "Something went wrong. Please try again.";
             setError(msg);
         } finally {
             setIsLoading(false);
