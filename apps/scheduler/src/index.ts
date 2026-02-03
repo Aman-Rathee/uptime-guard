@@ -17,4 +17,4 @@ const schedulerChecks = async () => {
 
 }
 
-setInterval(schedulerChecks, 3 * 1000 * 60);
+setInterval(schedulerChecks, 3 * 60 * 1000);

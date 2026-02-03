@@ -4,19 +4,17 @@ import { format, subMinutes, startOfMinute } from "date-fns";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface HistoryPoint {
-    timeSlot: string;
+    createdAt: string;
     avg_latency: number;
     uptime_rate: number;
     worstStatus: "Up" | "Down" | "Unknown";
 }
 
 export function StatusHeatmap({ data }: { data: HistoryPoint[] }) {
-
     const slots = [];
-    const now = startOfMinute(new Date());
 
-    for (let i = data.length; i >= 0; i--) {
-        slots.push(subMinutes(now, i * 10));
+    for (let i = 0; i < data.length; i++) {
+        slots.push(subMinutes(new Date(data[i]!.createdAt), 0));
     }
 
     const getBoxStyle = (status: HistoryPoint["worstStatus"] | undefined) => {

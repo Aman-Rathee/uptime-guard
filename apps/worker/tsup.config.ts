@@ -4,6 +4,6 @@ export default defineConfig((options: Options) => ({
     entry: ["src/**/*"],
     clean: true,
     format: ["cjs"],
-    noExternal: ["@repo/redis-client"],
+    noExternal: ["@repo/redis-client", "@repo/clickhouse-client"],
     ...options,
 }));

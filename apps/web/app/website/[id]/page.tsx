@@ -32,7 +32,7 @@ interface MonitorData {
         uptime24h: number;
         avgLatency24h: number;
         history: {
-            timeSlot: string;
+            createdAt: string;
             avg_latency: number;
             uptime_rate: number;
             worstStatus: "Up" | "Down" | "Unknown";
