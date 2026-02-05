@@ -63,9 +63,15 @@ export default function MonitorDetailsPage() {
 
     useEffect(() => {
         fetchData();
-        const interval = setInterval(fetchData, 30000);
-        return () => clearInterval(interval);
     }, [id]);
+
+    useEffect(() => {
+        if (!data?.stats.history.length) {
+            const interval = setInterval(fetchData, 3000);
+            return () => clearInterval(interval);
+        }
+    }, [data]);
+
 
     if (loading) {
         return (

@@ -115,3 +115,29 @@ export async function getLastStatus(websiteId: string) {
         console.error('Check last result error', error)
     }
 }
+
+export async function getLastUpTimestamp(websiteId: string) {
+    try {
+        const query = `
+        SELECT max(createdAt) as last_up
+        FROM ${tableName}
+        WHERE websiteId = {websiteId: String}
+          AND status = 'Up'
+    `;
+
+        const logs = await clickhouseClient.query({
+            query: query,
+            query_params: { websiteId },
+            format: 'JSONEachRow'
+        });
+
+        const data: { last_up: Date }[] = await logs.json();
+
+        if (!data[0] || !data[0].last_up) return null;
+        return new Date(data[0].last_up);
+
+    } catch (error) {
+        console.error('getLastUpTimestamp error', error);
+        return null;
+    }
+}

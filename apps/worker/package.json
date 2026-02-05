@@ -16,13 +16,17 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.15.3",
+    "@types/nodemailer": "^7.0.9",
     "tsup": "^8.5.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "@repo/clickhouse-client": "workspace:*",
+    "@repo/db": "workspace:*",
     "@repo/redis-client": "workspace:*",
-    "axios": "^1.13.2"
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
+    "nodemailer": "^8.0.0"
   }
 }

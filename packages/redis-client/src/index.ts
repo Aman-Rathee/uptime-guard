@@ -77,3 +77,22 @@ export async function xAckBulk(consumerGroup: string, eventIds: string[]) {
     });
     await multi.exec();
 }
+
+export async function wasAlertSent(websiteId: string) {
+    const redis = await getClient();
+    const key = `uptime-guard:alert:${websiteId}`;
+    const val = await redis.get(key);
+    return val === '1';
+}
+
+export async function markAlertSent(websiteId: string, ttlSeconds: number = 600) {
+    const redis = await getClient();
+    const key = `uptime-guard:alert:${websiteId}`;
+    await redis.set(key, '1', { EX: ttlSeconds });
+}
+
+export async function clearAlertSent(websiteId: string) {
+    const redis = await getClient();
+    const key = `uptime-guard:alert:${websiteId}`;
+    await redis.del(key);
+}

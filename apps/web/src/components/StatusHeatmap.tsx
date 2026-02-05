@@ -38,6 +38,7 @@ export function StatusHeatmap({ data }: { data: HistoryPoint[] }) {
 
             <div className="flex gap-[3px] h-10 items-end justify-center">
                 <TooltipProvider>
+                    {!data.length && <div className="text-slate-200">Monitoring in progress. Status will appear shortly.</div>}
                     {slots.map((slot, index) => {
                         return (
                             <Tooltip key={index} delayDuration={0}>
